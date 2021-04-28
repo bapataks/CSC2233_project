@@ -31,30 +31,30 @@ void compute(char *buf, char **tmp, int *size, int read_bytes, char **out, int *
         {
             if (*size == 0)
             {
-                *tmp = (char*) malloc((i-prev+1)*sizeof(char));
+                *tmp = (char*) malloc((i-prev)*sizeof(char));
             }
             else
             {
                 *tmp = (char*) realloc(*tmp, (*size+i-prev)*sizeof(char));
             }
-            memcpy(*tmp + *size, buf + prev, i - prev + 1);
-            *size += i - prev + 1;
+            memcpy(*tmp + *size, buf + prev, i - prev);
+            *size += i - prev;
 
             if (filterString(*tmp))
             {
-                printf("filtered string:%s\nsize:%d\n", *tmp, *size);
+                //printf("filtered string:%s\nsize:%d\n", *tmp, *size);
                 if (*outLength == 0)
                 {
-                    *out = (char*) malloc((*size)*sizeof(char));
+                    *out = (char*) malloc((*size+1)*sizeof(char));
                 }
                 else
                 {
-                    *out = (char*) realloc(*out, (*outLength+*size)*sizeof(char));
+                    *out = (char*) realloc(*out, (*outLength+*size+1)*sizeof(char));
                 }
                 memcpy(*out + *outLength, *tmp, *size);
-                *outLength += *size;
-                printf("out string:%s\nlength:%d\n", *out, *outLength);
-                //*out[*outLength-2] = '\n';
+                memcpy(*out + *outLength + *size, buf + i, 1);
+                *outLength += *size+1;
+                //printf("out string:%s\nlength:%d\n", *out, *outLength);
             }
 
             //printf("free tmp pointer\n");
@@ -66,7 +66,7 @@ void compute(char *buf, char **tmp, int *size, int read_bytes, char **out, int *
 
     if (*size == 0)
     {
-        *tmp = (char*) malloc((i-prev+1)*sizeof(char));
+        *tmp = (char*) malloc((i-prev)*sizeof(char));
     }
     else
     {
@@ -138,8 +138,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    int count = 777;
-    int result = write(write_fd, &count, sizeof(int));
+    int result = write(write_fd, out, outLength*sizeof(char));
 
     if (result < 0)
     {
