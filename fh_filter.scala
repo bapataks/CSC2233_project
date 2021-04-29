@@ -15,6 +15,7 @@ object HFilter {
 
         newList.toDS()
     }
+
     def main(args: Array[String]) {
         val logFile = args.head
         val spark = SparkSession.builder.appName("MapReduceApp").getOrCreate()
@@ -24,7 +25,8 @@ object HFilter {
         val logData = spark.read.textFile(logFile)
 
         val filterOutput = logData.myFilter(hostFilter)
-        println("remaining entries: " + filterOutput.count)
+        filterOutput.show()
+        //println("remaining entries: " + filterOutput.count)
 
         spark.stop()
     }
