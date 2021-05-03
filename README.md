@@ -54,3 +54,24 @@ In this section, we describe the contents of this repository.
   b. `storage_filesizeTime.py` - 
   c. `storage_cpuTime.py` - 
   d. `storage_bufsizeTime.py` - 
+
+## Experiments
+This section covers the experiments we perform and their results. We perform the experiments for stwo basic operations as mentioned before, charCounter and filter task. Since both of the tasks are performed over files that will be read by SparkSQL, before every run cache is cleared.
+
+#### charCounter Task
+charCounter task counts the total character count of a file. In terms of Spark operations it's a map function followed by a reduce operation over the lines of the file. We perform the following experiments with charCounter task to assess performance gain when offloading a map-reduce task to near disk processor.
+
+1. Time Taken Vs File Size
+It is obvious that the file size would affect the total runtime of the task. Higher the size of the file it would take higher time to process it. We run the charCounter task with the corresponding 3 scala driver functions for simple host, host and near disk computation for different file sizes and record the runtime. We use files of size [306M, 202M, 104M, 57M, 9.5M]. For each combination 3 runs are done and the average is used to plot a cluster bar graph comparing the 3 types of computation functions.
+![Time Taken Vs File Size](/result/taskTImeVSfileSizse.png "Time Taken Vs File Size")
+As expected, the time taken for processing increases linearly with increasing file size for each of the driver functions. The simple host performs much better than the other two, we expect this to be happening because of the optimized RDD operations that it is able to leverage within Spark. Near disk computation takes slightly more time to complete the task than the host computation.
+
+2. Time Taken Vs CPU Speed
+To simulate active disk processor running the task for near disk computation driver function we use `cpulimit` to limit CPU speed for Spark cluster. This experiment evaluates the time taken to process the task for host and near disk computation when Spark cluster has limited CPU speed to [100%, 90%, 80%, 70%, 60%, 50%]. The file size used in this experiment is 306M. For each combination 2 runs are done and the average is used to plot a cluster bar graph comparing host and near disk computation.
+![Time Taken Vs CPU Speed](/result/taskTimeVScpuLimit.png "Time Taken Vs CPU Speed")
+We expected the near disk computation to not be affected as much with the limited CPU speed of Spark cluster. This is because the near disk computation uses a separate C program to perform processing the actual operation. However, for the used file size, near disk computation does not show overall improvement over host computation. Both seem to be equally affected by the limited CPU speed. This could be happening because of multiple reasons, one is that the buffer size used in the C program that performs the operation for near disk computation is too small and thus causes unnecessary processing delay for the near disk computation as well to not show enough gains. This was evaluated in the next experiment. Second reason could be that the current file size is just too small to affect processing time. To verify this, we evaluated total time taken by the C program in its processing as a fraction of total task time. We found that the C program takes just about 10% of the total near disk computation time. So, limiting CPU speed will affect near disk computastion 90% of what host computation is affected. Thus, to achieve any useful performance gain when offloading map-reduce task to an active disk processor the operation must have been issued on a very large file.
+
+3. Time Taken Vs Buffer Size
+Since, appropraite gains were not observed for near disk computation over host computation when limiting CPU speed on Spark cluster, this experiment was carried out to evaluate the reason. One particular reason was that the buffer size that the C program uses is too small which increases the runtime for near disk computation unnecessarily. We perform near disk computation at full CPU speed and 50% CPU speed for buffer size of [4K, 256K, 1M, 10M, 50M, 100M]. For each combination 3 runs are done and the average is used to plot a lcuster bar graph comparing full CPU speed and half CPU speed for Spark cluster.
+![Time Taken Vs Buffer Size](/result/taskTimeVSbufSize.png "Time Taken Vs Buffer Size")
+We expected that with increasing buffer size the time taken would drop down for the task. For full CPU speed the time taken is almost similar for changing buffer size while for half CPU speed on Spark cluster the total time does decrease but the change is minimal.
