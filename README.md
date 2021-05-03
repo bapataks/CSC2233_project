@@ -25,3 +25,32 @@ Additionally, as required by the near disk scala driver function, we have a C pr
 Since, we are not actually using any active disk, the evaluation of any performance gain is done by simulating the near disk processor behavior for a task. To achieve such simulation we limit the cpu speed for the Spark cluster process using the `cpulimit` command. This results in the C program that the near disk driver function offloads the task to, to run faster than the other Spark processes. Host and Simple host driver functions that process the whole operaion as Spark jobs, should thus take more time than usual. Near disk driver function however, which uses the corresponding C program to process the operation should not be affected by limited CPU speed as much, since the C program will utilize full CPU power.
 
 Once it is established that these basic operations offer performance benefits, same can be evaluated for full SQL queries being executed on SparkSQL by modifying the SparkSQL code to call the near disk driver function instead of the original call to the corresponding operation and then simulating active disk processor behaviour for an additional C program by limiting CPU speed for the Spark jobs.
+
+## Included Files
+In this section, we describe the contents of this repository.
+1. charCounter - This folder contains files corresponding to evaluating the performance gains for map followed by reduce operaion. We use character counter as a task that would use such a combination of map and reduce operations. It returns the count of total number of characters in a file.
+
+  a. `sh_spark_counter.scala` -
+  b. `h_spark_counter.scala` - 
+  3. `nc_spark_counter.scala` - 
+  4. `comp_disk.c` - 
+  
+2. filter - This folder contains files corresponding to evaluating the performance of filter operation. We use (length < 20) as the filter predicate for the filter operation. It returns the lines that have less than 20 characters in a file discarding all the longer lines.
+
+  a. `fsh_filter.scala` - 
+  b. `fh_filter.scala` - 
+  c. `fnc_filter.scala` - 
+  d. `filter_compDisk.c` - 
+
+3. results - This folder contains the the csv files where the results from the several experiments that were carried out are recorded.
+
+  a. `fileSize.csv` - 
+  b. `cpuSpeed.csv` - 
+  c. `bufSize.csv` - 
+
+4. scripts - This folder contains any miscallaneous scripts that were used.
+
+  a. `populate.sh` - 
+  b. `storage_filesizeTime.py` - 
+  c. `storage_cpuTime.py` - 
+  d. `storage_bufsizeTime.py` - 
