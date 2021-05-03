@@ -63,7 +63,7 @@ charCounter task counts the total character count of a file. In terms of Spark o
 
 1. Time Taken Vs File Size
 It is obvious that the file size would affect the total runtime of the task. Higher the size of the file it would take higher time to process it. We run the charCounter task with the corresponding 3 scala driver functions for simple host, host and near disk computation for different file sizes and record the runtime. We use files of size [306M, 202M, 104M, 57M, 9.5M]. For each combination 3 runs are done and the average is used to plot a cluster bar graph comparing the 3 types of computation functions.
-![Time Taken Vs File Size](CSC2233_project/results/taskTImeVSfileSizse.png "Time Taken Vs File Size")
+![Time Taken Vs File Size](results/taskTImeVSfileSizse.png?raw=true "Time Taken Vs File Size")
 As expected, the time taken for processing increases linearly with increasing file size for each of the driver functions. The simple host performs much better than the other two, we expect this to be happening because of the optimized RDD operations that it is able to leverage within Spark. Near disk computation takes slightly more time to complete the task than the host computation.
 
 2. Time Taken Vs CPU Speed
