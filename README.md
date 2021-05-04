@@ -73,5 +73,5 @@ We expected the near disk computation to not be affected as much with the limite
 
 3. Time Taken Vs Buffer Size
 Since, appropraite gains were not observed for near disk computation over host computation when limiting CPU speed on Spark cluster, this experiment was carried out to evaluate the reason. One particular reason was that the buffer size that the C program uses is too small which increases the runtime for near disk computation unnecessarily. We perform near disk computation at full CPU speed and 50% CPU speed for buffer size of [4K, 256K, 1M, 10M, 50M, 100M]. For each combination 3 runs are done and the average is used to plot a lcuster bar graph comparing full CPU speed and half CPU speed for Spark cluster.
-![Time Taken Vs Buffer Size](https://github.com/bapataks/CSC2233_project/blob/master/results/taskTimeVSbufSize.png "Time Taken Vs Buffer Size")
+![Time Taken Vs Buffer Size](https://github.com/bapataks/CSC2233_project/blob/master/results/taskTImeVSbufSize.png "Time Taken Vs Buffer Size")
 We expected that with increasing buffer size the time taken would drop down for the task. For full CPU speed the time taken is almost similar for changing buffer size while for half CPU speed on Spark cluster the total time does decrease but the change is minimal.
