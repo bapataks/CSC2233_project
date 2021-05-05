@@ -41,7 +41,7 @@ object NCFilter {
         val logData = spark.read.textFile(logFile)
 
         val filterOutput = logData.myFilter(nearComputeFilter)
-        filterOutput.show()
+        //filterOutput.show()
         //println("remaining entries: " + filterOutput.count)
 
         spark.stop()

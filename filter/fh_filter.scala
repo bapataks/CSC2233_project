@@ -25,7 +25,7 @@ object HFilter {
         val logData = spark.read.textFile(logFile)
 
         val filterOutput = logData.myFilter(hostFilter)
-        filterOutput.show()
+        //filterOutput.show()
         //println("remaining entries: " + filterOutput.count)
 
         spark.stop()
