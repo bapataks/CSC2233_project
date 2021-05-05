@@ -1,6 +1,6 @@
 #!/bin/bash
 
-lineCount=8000000
+lineCount=1000000
 ((filterProb=($lineCount*$2)/100))
 filterCount=1
 
