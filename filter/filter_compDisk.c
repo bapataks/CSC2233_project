@@ -11,8 +11,9 @@
 #include <time.h>
 #include <stdbool.h>
 
-#define BUFSIZE 20 // test
+//#define BUFSIZE 20 // test
 //#define BUFSIZE 4096 //4K
+#define BUFSIZE 104857600 // 100M
 
 bool filterString(char *str)
 {
@@ -21,7 +22,6 @@ bool filterString(char *str)
 
 void compute(char *buf, char **tmp, int *size, int read_bytes, char **out, int *outLength)
 {
-    //char *tmp;
     int i,prev;
 
     for (i=0, prev=0; i<read_bytes; i++)
@@ -104,10 +104,10 @@ int main(int argc, char *argv[])
         mkfifo(app_reader, 0666);
     }
 
-    printf("Pipes ready\n");
+    //printf("Pipes ready\n");
 
     read_fd = open(app_writer, O_RDONLY);
-    printf("File open to be read: %d\n", read_fd);
+    //printf("File open to be read: %d\n", read_fd);
     if (read_fd < 0)
     {
         printf("%s:Could not open %s for reading %s\n", argv[0], app_writer, strerror(errno));
@@ -125,20 +125,22 @@ int main(int argc, char *argv[])
         read_bytes = read(read_fd, buf, BUFSIZE);
     }
 
-    clock_t toc = clock();
     close(read_fd);
 
-    printf("Final filtered output:\n%s\n", out);
+    //printf("Final filtered output:\n%s\n", out);
 
     write_fd = open(app_reader, O_WRONLY);
-    printf("file open to be written: %d\n", write_fd);
+    //printf("file open to be written: %d\n", write_fd);
     if (write_fd < 0)
     {
         printf("%s:Could not open %s for writing %s\n", argv[0], app_reader, strerror(errno));
         exit(1);
     }
 
+    write(write_fd, &outLength, sizeof(int));
     int result = write(write_fd, out, outLength*sizeof(char));
+
+    clock_t toc = clock();
 
     if (result < 0)
     {

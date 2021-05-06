@@ -21,12 +21,35 @@ object NCFilter {
 
         val in = new FileInputStream(appReader)
         var newList = List[String]()
-        var res = Array.ofDim[Byte](in.available())
-        in.read(res)
-        val output = (res.map(b => b.toChar)).mkString.split("\n")
+        var sizeByte = Array[Byte](0,0,0,0)
+        var readBytes = 0
+        var prevStr = ""
 
-        for (str <- output) {
-            newList = newList++List(str)
+        in.read(sizeByte)
+        val size = (((sizeByte(3) & 0xFF) << 24) | ((sizeByte(2) & 0xFF) << 16) | ((sizeByte(1) & 0xFF) << 8) | ((sizeByte(0) & 0xFF) << 0))
+
+        while (readBytes < size) {
+            val toRead = in.available()
+            val res = Array.ofDim[Byte](toRead)
+            in.read(res)
+
+            val lastReadChar = res(toRead-1).toChar
+            val output = (res.map(b => b.toChar)).mkString.split("\n")
+
+            newList = newList++List(prevStr+output(0))
+
+            for (i <- 1 to output.length-2) {
+                newList = newList++List(output(i))
+            }
+
+            if (lastReadChar == '\n') {
+                newList = newList++List(output(output.length-1))
+                prevStr = ""
+            } else {
+                prevStr = output(output.length-1)
+            }
+
+            readBytes += toRead
         }
 
         newList.toDS()
