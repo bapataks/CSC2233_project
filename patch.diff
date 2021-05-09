@@ -1,0 +1,9 @@
+1736a1737,1744
+>   def charCounter(func: (Dataset[T]=> Int)): Int = withNewRDDExecutionId {
+>     func(this)
+>   }
+> 
+>   def myFilter(func: Dataset[T] => Dataset[T]): Dataset[T] = {
+>     func(this)
+>   }
+> 
