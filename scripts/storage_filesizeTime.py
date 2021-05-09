@@ -8,14 +8,11 @@ host1 = [6752,4895,3232,2175,1033]
 host2 = [6530,4765,2947,2062,1018]
 host3 = [6565,4840,2932,2127,1042]
 host = [(x+y+z)/3 for x,y,z in zip(host1,host2,host3)]
-print(host)
 nearComp1 = [7795,5410,3355,2357,927]
 nearComp2 = [7317,5243,3429,2490,941]
 nearComp3 = [7589,5256,3164,2270,984]
 nearComp = [(x+y+z)/3 for x,y,z in zip(nearComp1,nearComp2,nearComp3)]
-print(nearComp)
 barwidth = 0.25
-#fig = plt.subplots(figsize=(12,8))
 br1 = [1,2,3,4,5]
 br2 = [x + barwidth for x in br1]
 br3 = [x + barwidth for x in br2]
