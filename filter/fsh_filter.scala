@@ -10,7 +10,7 @@ object SHFilter {
 
     def main(args: Array[String]) {
         val logFile = args.head
-        val spark = SparkSession.builder.appName("MapReduceApp").getOrCreate()
+        val spark = SparkSession.builder.appName("FilterApp").getOrCreate()
 
         import spark.implicits._
 

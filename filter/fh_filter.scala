@@ -1,15 +1,16 @@
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.Dataset
+import scala.collection.mutable.ListBuffer
 
 object HFilter {
 
     def hostFilter (d: Dataset[String]) : Dataset[String] = {
         val source = d.map(row => row.mkString).collect
 
-        var newList = List[String]()
+        var newList = ListBuffer[String]()
         for (l <- source) {
             if (l.length < 20) {
-                newList = newList++List(l)
+                newList += l
             }
         }
 
@@ -18,7 +19,7 @@ object HFilter {
 
     def main(args: Array[String]) {
         val logFile = args.head
-        val spark = SparkSession.builder.appName("MapReduceApp").getOrCreate()
+        val spark = SparkSession.builder.appName("FilterApp").getOrCreate()
 
         import spark.implicits._
 
