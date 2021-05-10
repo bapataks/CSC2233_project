@@ -88,6 +88,8 @@ In this section, we describe the contents of this repository.
   
   f. `storage_filterCPUTime.py` - Pyplot script to generate cluster bar graph from experiment data recorded in `filterCPU.csv`.
 
+5. `patch.diff` - Patch file that records the changes made to `Dataset.scala` file of SparkSQL code. It shows the added placeholder functions to SparkSQL that are used to run the scala driver functions corresponding to Simple Host, Host and Near Disk computation for character counter and filter tasks respectively.
+
 ## Experiments
 This section covers the experiments we perform and their results. We perform the experiments for two basic operations as mentioned before, charCounter and filter task. Since both of the tasks are performed over files that will be read by SparkSQL, before every run cache is cleared. We also restart spark cluster before each task.
 
