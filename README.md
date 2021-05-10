@@ -32,7 +32,10 @@ In this section, we describe the contents of this repository.
 
   a. `sh_spark_counter.scala`
   This file defines a Simple Host spark object which uses a driver function to compute total character count of a file using the basic operations like map and reduce provided by Spark. The result is directly obtained as a sequence of map and reduce transformation on the input Dataset.
-  b. `h_spark_counter.scala` - 
+  
+  b. `h_spark_counter.scala`
+  This 
+  
   c. `nc_spark_counter.scala` - 
   d. `comp_disk.c` - 
   
