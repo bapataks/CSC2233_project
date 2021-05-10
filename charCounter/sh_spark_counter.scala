@@ -1,71 +1,45 @@
+/*
+** Simple Host driver function
+**
+** This scala driver function computes the total character
+** count of a file using the basic operations like map and
+** reduce offered by Spark.
+*/
+
+// import required libraries
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.Dataset
 
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.nio.ByteBuffer
-
 object SHSparkCounter {
-/*
-    def hostCounter (d: Dataset[String]) : Int = {
-        val source = d.map(row => row.mkString).collect
-//        val source = Source.fromFile("tmp.txt").getLines
 
-        var charCount = 0
-            for (l <- source) {
-                for (c <- l) {
-                    if (c != '\n') {
-                        charCount += 1
-                    }
-                }
-            }
-
-        charCount
-    }
-*/
+    // core simple host driver function
     def hostCounterSimple (d: Dataset[String]) : Int = {
+        // use map to compute length of each line
+        // then use reduce to aggregate total count
         var numChars = d.map(line => line.length).reduce((a,b) => a+b)
 
+        // return result
         numChars
     }
-/*
-    def nearComputeCounter(d : Dataset[String]) : Int = {
-        val source = d.map(row => row.mkString).collect
-        val appWriter = "/tmp/app_writer"
-        val appReader = "/tmp/app_reader"
 
-        var out = new FileOutputStream(appWriter)
-        for (l_without_newline <- source) {
-            val l = l_without_newline
-            out.write(l.getBytes());
-        }
-        out.close();
-
-        val in = new FileInputStream(appReader)
-        var res = Array[Byte](0,0,0,0)
-        in.read(res)
-
-        var charCount = (((res(3) & 0xFF) << 24) | ((res(2) & 0xFF) << 16) | ((res(1) & 0xFF) << 8) | ((res(0) & 0xFF) << 0))
-        charCount
-    }
-*/
     def main(args: Array[String]) {
         val logFile = args.head
+
+        // create a new spark session or get one that exists
         val spark = SparkSession.builder.appName("MapReduceApp").getOrCreate()
 
-            import spark.implicits._
+        import spark.implicits._
 
+        // read the textfile as input
         val logData = spark.read.textFile(logFile)
 
-        //val numChars = logData.charCounter(hostCounter)
+        // compute total character count using simple host driver
         val numChars = logData.charCounter(hostCounterSimple)
-        //val numChars = logData.charCounter(nearComputeCounter)
 
-        //println("hostCounter: " + spark.time(logData.charCounter(hostCounter)))
-        //println("hostCounterSimple: " + spark.time(logData.charCounter(hostCounterSimple)))
-        //println("nearCounter: " + spark.time(logData.charCounter(nearComputeCounter)))
-
+        // print the result
         println("numChars: " + numChars)
+
+        // stop spark session
         spark.stop()
     }
 }
