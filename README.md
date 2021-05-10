@@ -30,11 +30,11 @@ Once it is established that these basic operations offer performance benefits, s
 In this section, we describe the contents of this repository.
 1. charCounter - This folder contains files corresponding to evaluating the performance gains for map followed by reduce operation. We use character counter as a task that would use such a combination of map and reduce operations. The task is to count the total number of characters in a file.
 
-  a. `sh_spark_counter.scala`
+  a. `sh_spark_counter.scala` -
   This file defines a Simple Host spark object which uses a driver function to compute total character count of a file using the basic operations like map and reduce provided by Spark. The result is directly obtained as a sequence of map and reduce transformation on the input Dataset.
   
-  b. `h_spark_counter.scala`
-  This 
+  b. `h_spark_counter.scala` - 
+  This file defines a Host spark object which uses a driver function to compute total character count of a file using simple scala loops for traversing through the file. The input Dataset is first converted to an array of strings, one item for each line. Each line and character is then traversed one by one and the character count is aggregated to get the final result.
   
   c. `nc_spark_counter.scala` - 
   d. `comp_disk.c` - 
