@@ -7,13 +7,13 @@
 # 1. file that is to be created
 # 2. filter predicate selectivity (less than 20 characters long)
 #
-# It creates a file with lineCount lines
-# and probabilistically writes a line that is less than 20
-# characters long with specified selectivity as probabilty
+# It creates a file with lineCount lines.
+# Each line is less than 20 characters long with a 
+# probabilty equal to the specified selectivity.
 #
-# We end up having a test file with less than given selectivity
-# with respect to (less than 20 characters long) but also
-# close to the given amount
+# We end up having a test data file with approximately given selectivity
+# percentage of lines to satisfy the filter predicate (less than 20
+# characters long). 
 #
 # Usage:
 # ./populate.sh <fileName> <selectivityPercent>
