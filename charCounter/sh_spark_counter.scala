@@ -1,9 +1,9 @@
 /*
-** Simple Host driver function
+** Simple Host driver object
 **
-** This scala driver function computes the total character
-** count of a file using the basic operations like map and
-** reduce offered by Spark.
+** This scala object computes the total character count of
+** a file using the basic operations like map and reduce
+** provided by Spark.
 */
 
 // import required libraries

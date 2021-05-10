@@ -1,9 +1,9 @@
 /*
-** Near Disk driver function
+** Near Disk driver object
 **
-** This scala driver function computes the total character
-** count of a file by offloading the actual computation to
-** a separate process.
+** This scala object computes the total character count of
+** a file by offloading the actual computation to a separate
+** process.
 **
 ** It communicates with the separate process through read
 ** and write pipes, writing the file contents to be processed,

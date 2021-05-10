@@ -1,9 +1,9 @@
 /*
-** Host driver function
+** Host driver object
 **
-** This scala driver function computes the total character
-** count of a file using simple scala loops for traversing
-** through the file.
+** This scala object computes the total character count of
+** a file using simple scala loops for traversing through
+** the file.
 */
 
 // import required libraries.
