@@ -13,27 +13,28 @@ Active disks are storage devices that can also perform computation on the data t
 ## Approach
 When SQL queries are executed they are typically processed as a sequence of several operations to eventually generate a result. SparkSQL also does the same thing when executing SQL queries. The operations are small processing tasks like scan, filter etc. The results of one operation are fed into another operation unit as input to complete a sequence of operations that generates the final result. Some of these operations are good candidates to be offloaded to a near disk processor to get performance gains.
 
-In this project we evaluate two basic operaions offered and used by SparkSQL and how much gains can these operations get when offloaded to a near disk processor. The first is a combination of a map followed by a reduce operation and other is a filter operation. If the offloaded processing of these individual operations can enhance their standalone performance then offloading these operaions when they are a part of a larger job will achieve performance gains for the job as well.
+In this project we evaluate two basic operations provided and used by SparkSQL and how much gains can these operations get when offloaded to a near disk processor. The first is a combination of a map followed by a reduce operation and the other is a filter operation. If the offloaded processing of these individual operations can enhance their standalone performance then offloading these operations when they are a part of a larger job will achieve performance gains for the job as well.
 
-To evaluate a basic operaion, we modify the SparkSQL code to create a new function corresponding to the operation. We then create scala driver functions that perform the actual operaion. The driver functions are as follows:
-1. Simple Host - This function performs the required operaion as would have done by SparkSQL originally with the benefit of added optimized RDD processing.
+To evaluate a basic operation, we modify the SparkSQL code to create a new function corresponding to the operation. We then create scala driver functions that perform the actual operation. The driver functions are as follows:
+1. Simple Host - This function performs the required operation as would have done by SparkSQL originally with the benefit of added optimized RDD processing.
 2. Host - This function performs the required operation as a normal scala task.
-3. Near Disk - This function performs the required operation by offloading the task to another process and getting the result back from it using file input/output streams.
+3. Near Disk - This function performs the required operation by offloading the task to another process and getting the result back from it using input/output pipe streams.
 
-Additionally, as required by the near disk scala driver function, we have a C program that performs the required operaion by reading some input given by the driver function, processing it accordingly and, writing back the results to a stream that can then be read back by the driver function.
+Additionally, as required by the near disk scala driver function, we have a C program that performs the required offloaded operation by reading some input given by the driver function, processing it accordingly and, writing back the results to a pipe that can then be read back by the driver function.
 
-Since, we are not actually using any active disk, the evaluation of any performance gain is done by simulating the near disk processor behavior for a task. To achieve such simulation we limit the cpu speed for the Spark cluster process using the `cpulimit` command. This results in the C program that the near disk driver function offloads the task to, to run faster than the other Spark processes. Host and Simple host driver functions that process the whole operaion as Spark jobs, should thus take more time than usual. Near disk driver function however, which uses the corresponding C program to process the operation should not be affected by limited CPU speed as much, since the C program will utilize full CPU power.
+Since, we are not actually using any active disk, the evaluation of any performance gain is done by simulating the near disk processor behavior for a task. To achieve such simulation we limit the cpu speed for the Spark cluster process using the `cpulimit` command. This results in the C program that the near disk driver function offloads the task to, to run faster than the other Spark processes. Host and Simple Host driver functions that process the whole operation as Spark jobs, should thus take more time than usual. Near disk driver function however, which uses the corresponding C program to process the operation should not be affected by limited CPU speed as much, since the C program will utilize full CPU power.
 
 Once it is established that these basic operations offer performance benefits, same can be evaluated for full SQL queries being executed on SparkSQL by modifying the SparkSQL code to call the near disk driver function instead of the original call to the corresponding operation and then simulating active disk processor behaviour for an additional C program by limiting CPU speed for the Spark jobs.
 
 ## Included Files
 In this section, we describe the contents of this repository.
-1. charCounter - This folder contains files corresponding to evaluating the performance gains for map followed by reduce operaion. We use character counter as a task that would use such a combination of map and reduce operations. It returns the count of total number of characters in a file.
+1. charCounter - This folder contains files corresponding to evaluating the performance gains for map followed by reduce operation. We use character counter as a task that would use such a combination of map and reduce operations. The task is to count the total number of characters in a file.
 
-  a. `sh_spark_counter.scala` -
+  a. `sh_spark_counter.scala`
+  This file defines a Simple Host spark object which uses a driver function to compute total character count of a file using the basic operations like map and reduce provided by Spark. The result is directly obtained as a sequence of map and reduce transformation on the input Dataset.
   b. `h_spark_counter.scala` - 
-  3. `nc_spark_counter.scala` - 
-  4. `comp_disk.c` - 
+  c. `nc_spark_counter.scala` - 
+  d. `comp_disk.c` - 
   
 2. filter - This folder contains files corresponding to evaluating the performance of filter operation. We use (length < 20) as the filter predicate for the filter operation. It returns the lines that have less than 20 characters in a file discarding all the longer lines.
 
