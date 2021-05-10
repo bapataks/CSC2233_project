@@ -1,5 +1,24 @@
 #!/bin/bash
 
+# This script is used to generate test files for filter experiment.
+# No effort has been taken to make this robust.
+#
+# It takes 2 arguments
+# 1. file that is to be created
+# 2. filter predicate selectivity (less than 20 characters long)
+#
+# It creates a file with lineCount lines
+# and probabilistically writes a line that is less than 20
+# characters long with specified selectivity as probabilty
+#
+# We end up having a test file with less than given selectivity
+# with respect to (less than 20 characters long) but also
+# close to the given amount
+#
+# Usage:
+# ./populate.sh <fileName> <selectivityPercent>
+
+
 lineCount=1000000
 ((filterProb=($lineCount*$2)/100))
 filterCount=1
