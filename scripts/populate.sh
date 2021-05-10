@@ -26,7 +26,7 @@ filterCount=1
 for (( counter = $lineCount; counter>0; counter-- ))
 do
     ((tmp=1+($RANDOM % 100)))
-    if [ $tmp -lt $2 ];
+    if [ $tmp -le $2 ];
     then
         echo "short $filterCount" >> $1
         ((filterCount=$filterCount+1))
