@@ -56,18 +56,37 @@ In this section, we describe the contents of this repository.
   d. `filter_compDisk.c` - 
   This C program will perform the processing of filtering a file to keep only the lines that satisfy the set filter predicate when near disk driver function offloads the operation to this process. It communicates with the near disk driver function through read and write pipes, reading the input to be processed, and writing back the result after processing it. Data to be processed is read from the read pipe and is traversed byte by byte. Each line is then identified and the filter predicate is evaluated for it, the line is appended to a local result if the predicate evaluates to true, and discarded if not. The local result is then written back to the write pipe after processing the input. The filter predicate is defined as a boolean returning function on a string and can be modified as required.
 
-3. results - This folder contains the the csv files where the results from the several experiments that were carried out are recorded.
+3. results - This folder contains the the csv files where the results from the several experiments that were carried out are recorded. Each csv file is then used to plot cluster bar graphs for comparison.
 
-  a. `fileSize.csv` - 
-  b. `cpuSpeed.csv` - 
-  c. `bufSize.csv` - 
+  a. `fileSize.csv` - `taskTimeVSfileSize.png` - 
+  This file records the total time taken for character counter task to complete for Simple Host, Host and Near Disk computations when using files with varying file sizes. For each combination, 3 runs are done and recorded. The corresponding png file is the cluster bar graph generated from this file.
+  
+  b. `cpuSpeed.csv` - `taskTimeVScpuLimit.png` - 
+  This file records the total time taken for character counter task to complete for Host and Near Disk computation when Spark cluster processes are limited to varying CPU speeds. For each combination, 2 runs are done and recorded. The corresponding png file is the cluster bar graph generated from this file.
+  
+  c. `bufSize.csv` - `taskTimeVSbufSize.png` - 
+  This file records the total time taken for character counter task to complete for Near Disk computation with Spark cluster processes limited to full and half CPU speed for varying buffer sizes used to read data from pipe for the C program. For each combination, 3 runs are done and recorded. The corresponding png file is the cluster bar graph generated from this file.
+  
+  d. `selectivity.csv` - `taskTimeVSfilterSelectivity.png` - 
+  This file records the total time taken for filter task to complete for Simple Host, Host and Near Disk computations when using files with varying degrees of selectivity with respect to the filter predicate. For each combination, 3 runs are done and recorded. The corresponding png file is the cluster bar graph generated from this file.
+  
+  e. `filterCPU.csv` - `taskTimeVSfilterCPULimit.png` - 
+  This file records the total time taken for filter task to complete for Host and Near Disk computation when Spark cluster processes are limited to varying CPU speeds. For each combination, 2 runs are done and recorded. The corresponding png file is the cluster bar graph generated from this file.
 
 4. scripts - This folder contains any miscallaneous scripts that were used.
 
   a. `populate.sh` - 
-  b. `storage_filesizeTime.py` - 
-  c. `storage_cpuTime.py` - 
-  d. `storage_bufsizeTime.py` - 
+  This script is used to generate test data files for the filter experiment. It takes 2 arguments, one the file to be generated, second the intended selectivity percentage. The output file generated is of specified number of lines as mentioned in the script. Each new line added to the destination file satisfies the filter predicate with a probabilty of the given selectivity so the final file has approximately equivalent selectivty percentage as specified by the user.
+  
+  b. `storage_filesizeTime.py` - Pyplot script to generate cluster bar graph from experiment data recorded in `fileSize.csv`.
+  
+  c. `storage_cpuTime.py` - Pyplot script to generate cluster bar graph from experiment data recorded in `cpuSpeed.csv`.
+  
+  d. `storage_bufsizeTime.py` - Pyplot script to generate cluster bar graph from experiment data recorded in `bufSize.csv`.
+  
+  e. `storage_filterSelectivityTime.py` - Pyplot script to generate cluster bar graph from experiment data recorded in `selectivity.csv`.
+  
+  f. `storage_filterCPUTime.py` - Pyplot script to generate cluster bar graph from experiment data recorded in `filterCPU.csv`.
 
 ## Experiments
 This section covers the experiments we perform and their results. We perform the experiments for two basic operations as mentioned before, charCounter and filter task. Since both of the tasks are performed over files that will be read by SparkSQL, before every run cache is cleared. We also restart spark cluster before each task.
