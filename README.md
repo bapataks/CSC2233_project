@@ -30,21 +30,31 @@ Once it is established that these basic operations offer performance benefits, s
 In this section, we describe the contents of this repository.
 1. charCounter - This folder contains files corresponding to evaluating the performance gains for map followed by reduce operation. We use character counter as a task that would use such a combination of map and reduce operations. The task is to count the total number of characters in a file.
 
-  a. `sh_spark_counter.scala` -
-  This file defines a Simple Host spark object which uses a driver function to compute total character count of a file using the basic operations like map and reduce provided by Spark. The result is directly obtained as a sequence of map and reduce transformation on the input Dataset.
+  a. `sh_spark_counter.scala` - 
+  This file defines a Simple Host spark object which uses a driver function to compute total character count of a file using the basic operations like map and reduce provided by Spark. The result is directly obtained as a sequence of map and reduce transformation on the input Dataset. Map operation converts all lines to their corresponding lengths and the reduce operation aggregates the final character count.
   
   b. `h_spark_counter.scala` - 
   This file defines a Host spark object which uses a driver function to compute total character count of a file using simple scala loops for traversing through the file. The input Dataset is first converted to an array of strings, one item for each line. Each line and character is then traversed one by one and the character count is aggregated to get the final result.
   
   c. `nc_spark_counter.scala` - 
-  d. `comp_disk.c` - 
+  This file defines a Near Disk spark object which uses a driver function to compute total character count of a file by offloading the actual computation to a separate process. It communicates with the other process through read and write pipes, writing the file contents to be processed, and reading back the result. The input Dataset is first converted to an array of strings, one item for each line, and then it is written out to the write pipe for processing. The result is read back after processing as byte stream and is converted to integer format.
   
-2. filter - This folder contains files corresponding to evaluating the performance of filter operation. We use (length < 20) as the filter predicate for the filter operation. It returns the lines that have less than 20 characters in a file discarding all the longer lines.
+  d. `comp_disk.c` - 
+  This C program will perform the computation of aggregating the total character count of a file when near disk compute driver function offloads the operation to this process. It communicates with the near disk driver function through read and write pipes, reading the input to be processed, and writing back the result after processing it. Data to be processed is read from the read pipe and is traversed byte by byte while aggregating character counts to get the final result, similar to host driver function. The result is then written back to the write pipe after processing the input.
+  
+2. filter - This folder contains files corresponding to evaluating the performance of filter operation. We use (length < 20) as the filter predicate for the corresponding filter operation. It returns only those lines of a file that are less than 20 characters in length while discarding all the longer lines.
 
   a. `fsh_filter.scala` - 
+  This file defines a Simple Host spark object which uses a driver function to filter all lines less than 20 characters long from a file using basic filter operation provided by Spark. The result is directly obtained by applying a filter transformation with the given filter predicate on the input Dataset.
+  
   b. `fh_filter.scala` - 
+  This file defines a Host spark object which uses a driver function to filter all lines less than 20 characters long from a file using simple scala for trsaversing through the file. The input Dataset is first converted to an array of strings, one item for each line. Each line is then traversed to check the result of the filter predicate, the line is appended to the result if the predicate evaluates to true, and discarded if not.
+  
   c. `fnc_filter.scala` - 
+  This file defines a Near Disk scala object which uses a driver function to filter all lines less than 20 characters long from a file by offloading the actual processing to a separate process. It communicats with the other process through read and write pipes, writing the file contents to be processed, and reading back the result. The input Dataset is first converted to an array of strings, one item for each line and then it is written out to the write pipe for processing. The result is read back after processing as byte stream and converted to a local Dataset to be returned.
+  
   d. `filter_compDisk.c` - 
+  This C program will perform the processing of filtering a file to keep only the lines that satisfy the set filter predicate when near disk driver function offloads the operation to this process. It communicates with the near disk driver function through read and write pipes, reading the input to be processed, and writing back the result after processing it. Data to be processed is read from the read pipe and is traversed byte by byte. Each line is then identified and the filter predicate is evaluated for it, the line is appended to a local result if the predicate evaluates to true, and discarded if not. The local result is then written back to the write pipe after processing the input. The filter predicate is defined as a boolean returning function on a string and can be modified as required.
 
 3. results - This folder contains the the csv files where the results from the several experiments that were carried out are recorded.
 
