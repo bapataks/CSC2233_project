@@ -144,4 +144,32 @@ We evaluated two tasks, character counter and filter, simulating the offloading 
 As some future steps for the project, we would have to optimize the host and near disk computation driver functions to be much more optimal such that overhead processing time can be reduced and large percent of computation gets offloaded. Another area to look for is the system model we used, it still performs read and write from the driver functions to send the data to the independent process. This read and write should also get affected by the `cpulimit` speed limit. This could be causing unnecessary delay to near disk computation and is irrelevant for the host and simple host computation driver functions. Possible enhancement could be to just send the file name to the independent process and then we can let the independent process directly read the data from the source. One more direction is that these operations in particular were not computation heavy but generated small results. It is possible that the data fetching overhead overshadowed the computation. We tried to make it computationally heavy by using large sized files which also increased any other overheads. Maybe a computation heavy operation can be experimented on to check if the offloaded percentage is any higher.
 
 ## Steps to Recreate Experimental Results
-1. 
+1. Clone this repository.
+Run `git clone https://github.com/bapataks/CSC2233_project`
+
+2. Install Spark
+Clone Spark repository by running `git clone https://github.com/apache/spark.git`
+Then build it using these [instructions](https://spark.apache.org/docs/latest/building-spark.html).
+
+3. Compile `charCounter/comp_disk.c` and `filter/filter_compDisk.c`
+Run `gcc charCounter/comp_disk.c -o comp_disk`
+Run `gcc filter/filter_copDisk.c -o filter_compDisk`
+
+4. Create text files that need to be processed. Let us assume there is a file `tmp.txt` available to be used.
+
+5. Start Spark shell
+Run `$SPARK_HOME/bin/spark-shell`
+
+6. Load any one of the scala driver function objects
+Run `:load filter/fh_filter.scala` in the Spark shell
+
+7. Run the main function of the loaded object, time it with spark.time() if required.
+Run `spark.time(HFilter.main(Array("tmp.txt")))`
+
+8. If near disk compute object is loaded, start the near disk compute independent C process in another terminal and then run the main function of the object
+
+9. To limit CPU speed of spark cluster, run following, make sure spark shell is running
+Run `ps -eaf | grep "SparkSubmit"`
+Run `sudo cpulimit -p <process-id from above operation> -l <limiting cpu speed in percent> -v`
+
+10. Modify scripts to generate new graphs or filter test data accordingly
