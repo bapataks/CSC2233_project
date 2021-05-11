@@ -145,30 +145,37 @@ As some future steps for the project, we would have to optimize the host and nea
 
 ## Steps to Recreate Experimental Results
 1. Clone this repository.
+
 Run `git clone https://github.com/bapataks/CSC2233_project`
 
 2. Install Spark
+
 Clone Spark repository by running `git clone https://github.com/apache/spark.git`
 Then build it using these [instructions](https://spark.apache.org/docs/latest/building-spark.html).
 
 3. Compile `charCounter/comp_disk.c` and `filter/filter_compDisk.c`
+
 Run `gcc charCounter/comp_disk.c -o comp_disk`
 Run `gcc filter/filter_copDisk.c -o filter_compDisk`
 
 4. Create text files that need to be processed. Let us assume there is a file `tmp.txt` available to be used.
 
 5. Start Spark shell
+
 Run `$SPARK_HOME/bin/spark-shell`
 
 6. Load any one of the scala driver function objects
+
 Run `:load filter/fh_filter.scala` in the Spark shell
 
 7. Run the main function of the loaded object, time it with spark.time() if required.
+
 Run `spark.time(HFilter.main(Array("tmp.txt")))`
 
 8. If near disk compute object is loaded, start the near disk compute independent C process in another terminal and then run the main function of the object
 
 9. To limit CPU speed of spark cluster, run following, make sure spark shell is running
+
 Run `ps -eaf | grep "SparkSubmit"`
 Run `sudo cpulimit -p <process-id from above operation> -l <limiting cpu speed in percent> -v`
 
